@@ -84,17 +84,23 @@ test('the committed src/publik-build.json carries an EMPTY app token and the pro
   assert.ok(Number.isInteger(cfg.disclosureVersion) && cfg.disclosureVersion >= 1);
 });
 
-test('release.yml embeds PUBLIK_APP_TOKEN (failing closed) before every dist step; ci.yml never needs it', () => {
-  const release = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'release.yml'), 'utf8');
-  const embedAt = release.indexOf('name: Embed publik app token');
-  assert.ok(embedAt > 0, 'release.yml has the embed step');
-  assert.match(release, /PUBLIK_APP_TOKEN: \$\{\{ secrets\.PUBLIK_APP_TOKEN \}\}/);
-  assert.match(release, /test -n "\$PUBLIK_APP_TOKEN" \|\| \{[^}]*exit 1/);
-  for (const m of release.matchAll(/run: npm run dist/g)) {
-    assert.ok(m.index > embedAt, 'the embed step precedes every npm run dist');
-  }
+test('CueDesk has only read-only test CI, with no inherited release or agent workflows', () => {
+  const directory = path.join(__dirname, '..', '.github', 'workflows');
+  assert.deepEqual(fs.readdirSync(directory).sort(), ['ci.yml']);
   const ci = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'ci.yml'), 'utf8');
-  assert.doesNotMatch(ci, /PUBLIK_APP_TOKEN/, 'PR builds from forks must not need a secret');
+  assert.match(ci, /contents: read/);
+  assert.match(ci, /npm ci --ignore-scripts/);
+  assert.doesNotMatch(ci, /secrets\.|publikhq|npm run dist|permissions: write|pull_request_target/);
+});
+
+test('CueDesk preserves an honest executable identity and includes its study entry', () => {
+  const builder = require('../electron-builder.cjs');
+  assert.equal(pkg.scripts.postinstall, undefined);
+  assert.equal(pkg.main, 'desktop/main.cjs');
+  assert.ok(builder.files.includes('desktop/**/*'));
+  assert.equal(builder.productName, 'CueDesk');
+  assert.equal(builder.afterPack, undefined);
+  assert.equal(fs.existsSync(path.join(__dirname, '..', 'scripts/rename-electron.js')), false);
 });
 
 test('the publik files ship: they live under src/, which the files allowlist packages', () => {

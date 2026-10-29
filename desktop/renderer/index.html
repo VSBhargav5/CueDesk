@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <title>CueDesk — Study workspace</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="renderer.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><div><p class="eyebrow">CUEDESK · WINDOWS WORKSPACE</p><h1>Understand the next step.</h1></div><span class="badge">Offline foundation</span></header>
+    <p class="intro">Bring a question, add the context, and choose how you want to learn.</p>
+    <div class="status"><span class="dot"></span>No screen capture · No microphone · No AI connection</div>
+    <form id="study-form">
+      <fieldset><legend>How should we approach it?</legend>
+        <label class="mode"><input type="radio" name="mode" value="hint" checked><span><strong>Give me a hint</strong><small>One step, then let me try.</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="explain"><span><strong>Explain the idea</strong><small>Build from first principles.</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="debug"><span><strong>Help me debug</strong><small>Evidence, hypothesis, next check.</small></span></label>
+      </fieldset>
+      <label for="question">Your question <span>Required</span></label>
+      <textarea id="question" rows="3" maxlength="4000" required placeholder="Why does this function return the same value twice?"></textarea>
+      <label for="context">Context <span>Optional · stays in this session</span></label>
+      <textarea id="context" rows="5" maxlength="20000" placeholder="Paste a small code sample, an error, or what you have already tried."></textarea>
+      <div class="actions"><button type="submit">Preview study request</button><button type="button" id="clear" class="secondary">Clear session</button></div>
+    </form>
+    <section id="preview" hidden><div class="preview-heading"><h2>Request preview</h2><button type="button" id="copy" class="secondary">Copy request</button></div><p class="note">This is a prepared prompt, not an AI answer. Nothing has been sent.</p><pre id="prompt"></pre></section>
+    <p id="feedback" role="status" aria-live="polite">Ready. Screenshot preview and provider connection come next.</p>
+    <footer>Adapted from Cue · Personal study and coding · In-memory session, no saved history</footer>
+  </main>
+</body>
+</html>
