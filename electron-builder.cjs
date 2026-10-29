@@ -27,17 +27,17 @@ const canNotarize =
 
 /** @type {import('electron-builder').Configuration} */
 module.exports = {
-  appId: "com.cue.overlay",
-  productName: "cue",
+  appId: "io.github.vsbhargav5.cuedesk",
+  productName: "CueDesk",
   asar: false,
   publish: null,
   artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
   // An allowlist, so anything new has to be added here or it simply is not in
   // the shipped app — and the only symptom is a require() that throws at
   // launch, in a build that ran fine from source.
-  files: ["main.js", "preload.js", "src/**/*", "renderer/**/*", "vendor/**/*"],
+  files: ["desktop/**/*", "main.js", "preload.js", "src/**/*", "renderer/**/*", "vendor/**/*"],
   directories: { buildResources: "build-resources" },
-  afterPack: "scripts/after-pack.js",
+  // The study foundation has no audio runtime; Whisper bundling is deferred.
   mac: {
     target: [{ target: "zip", arch: ["x64", "arm64"] }],
     category: "public.app-category.productivity",
@@ -71,7 +71,7 @@ module.exports = {
     oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
-    shortcutName: "cue",
+    shortcutName: "CueDesk",
   },
   linux: {
     target: [{ target: "AppImage", arch: ["x64", "arm64"] }],
