@@ -38,7 +38,9 @@ in this folder to open the same study workspace without typing a command.
 
 1. Click **List screens and windows**, choose the material you want to study,
    then click **Capture preview**. Confirm the image is the one you intend.
-2. Enter a question and optional code, choose hint/explain/debug, then preview it.
+2. Use an Explain / Hint / Debug starter or enter your own question and code.
+   The capture and question sit side by side on a wide window. Press Ctrl+Enter
+   (or Review request) to prepare the request locally; this does not send it.
 3. Enter your own OpenAI API key into the masked session field, review the text
    and screenshot, check the review box and click **Ask about this screen**.
 4. Read and check the answer. Use **Cancel request** to stop waiting or
