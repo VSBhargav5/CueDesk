@@ -3,16 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
   <title>CueDesk — Study workspace</title>
   <link rel="stylesheet" href="styles.css">
   <script src="renderer.js" defer></script>
 </head>
 <body>
   <main>
-    <header><div><p class="eyebrow">CUEDESK · WINDOWS WORKSPACE</p><h1>Understand the next step.</h1></div><span class="badge">Offline foundation</span></header>
+    <header><div><p class="eyebrow">CUEDESK · WINDOWS WORKSPACE</p><h1>Understand what is on your screen.</h1></div><span class="badge">Screen study</span></header>
     <p class="intro">Bring a question, add the context, and choose how you want to learn.</p>
-    <div class="status"><span class="dot"></span>No screen capture · No microphone · No AI connection</div>
+    <div class="status"><span class="dot"></span>Capture only when you choose · No microphone · Send only after review</div>
+    <label class="consent"><input type="checkbox" id="pin"> Keep CueDesk above other windows</label>
+    <section class="capture"><h2>1. Choose what to study</h2><p class="note">List available screens and windows, select one, then capture a still preview. The capture stays local until you send it.</p>
+      <div class="actions"><button type="button" id="sources">List screens and windows</button><select id="source" aria-label="Screen or window"><option value="">Choose a source</option></select><button type="button" id="capture" class="secondary">Capture preview</button><button type="button" id="remove-image" class="secondary">Remove image</button></div>
+      <p id="image-info" class="note">No capture selected.</p><img id="image" alt="Selected screen or window preview" hidden>
+    </section>
     <form id="study-form">
       <fieldset><legend>How should we approach it?</legend>
         <label class="mode"><input type="radio" name="mode" value="hint" checked><span><strong>Give me a hint</strong><small>One step, then let me try.</small></span></label>
@@ -25,8 +30,13 @@
       <textarea id="context" rows="5" maxlength="20000" placeholder="Paste a small code sample, an error, or what you have already tried."></textarea>
       <div class="actions"><button type="submit">Preview study request</button><button type="button" id="clear" class="secondary">Clear session</button></div>
     </form>
-    <section id="preview" hidden><div class="preview-heading"><h2>Request preview</h2><button type="button" id="copy" class="secondary">Copy request</button></div><p class="note">This is a prepared prompt, not an AI answer. Nothing has been sent.</p><pre id="prompt"></pre></section>
-    <p id="feedback" role="status" aria-live="polite">Ready. Screenshot preview and provider connection come next.</p>
+    <section id="preview" hidden><div class="preview-heading"><h2>2. Review and ask</h2><button type="button" id="copy" class="secondary">Copy request</button></div><p class="note">The prompt and captured image above are sent to OpenAI (gpt-4.1-mini) only when you press Ask. API charges apply. Your key is kept only in this session.</p><pre id="prompt"></pre>
+      <label for="api-key">OpenAI API key <span>Session only</span></label><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your own API key">
+      <label class="consent"><input type="checkbox" id="consent"> I reviewed the screen preview and request for sending.</label>
+      <div class="actions"><button type="button" id="ask">Ask about this screen</button><button type="button" id="cancel" class="secondary" disabled>Cancel request</button></div>
+    </section>
+    <section id="answer-section" hidden><h2>3. AI answer</h2><p class="note">Check the answer: AI can make mistakes.</p><pre id="answer"></pre></section>
+    <p id="feedback" role="status" aria-live="polite">Choose a screen or window to start.</p>
     <footer>Adapted from Cue · Personal study and coding · In-memory session, no saved history</footer>
   </main>
 </body>

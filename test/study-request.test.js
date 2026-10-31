@@ -27,10 +27,10 @@ test('each mode gives distinct tutoring guidance while retaining the actual ques
   assert.equal(new Set(prompts).size, 3);
 });
 
-test('trims only outer whitespace and preserves Unicode and internal formatting', () => {
+test('trims the question and preserves context indentation and Unicode exactly', () => {
   const result = prepareStudyRequest({ question: ' \nWhy తెలుగు 🧠?\t ', context: '\t  α\r\n  β = "é"\n終  \n', mode: 'explain' });
   assert.equal(result.question, 'Why తెలుగు 🧠?');
-  assert.equal(result.context, 'α\r\n  β = "é"\n終');
+  assert.equal(result.context, '\t  α\r\n  β = "é"\n終  \n');
   assert.ok(result.prompt.includes(result.question));
   assert.ok(result.prompt.includes(result.context));
 });
