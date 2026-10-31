@@ -30,7 +30,7 @@ function invalidate() {
   consent.checked = false;
   answer.textContent = '';
   answerSection.hidden = true;
-  feedback.textContent = 'Ready to preview. Nothing has been sent.';
+  feedback.textContent = 'Inputs changed. Preview and review the current request.';
 }
 form.addEventListener('input', invalidate);
 form.addEventListener('submit', async event => {
@@ -50,6 +50,8 @@ form.addEventListener('submit', async event => {
 });
 document.querySelector('#sources').addEventListener('click', async () => {
   try {
+    if (busy) return;
+    await clearImage();
     const sources = await window.study.sources();
     source.replaceChildren(new Option('Choose a source', ''));
     for (const item of sources) source.add(new Option(item.name, item.id));
@@ -84,12 +86,18 @@ async function clearImage() {
   document.querySelector('#image-info').textContent = 'No capture selected.';
   await window.study.clearImage();
 }
+source.addEventListener('change', () => {
+  clearImage().catch(error => { feedback.textContent = error.message; });
+});
 document.querySelector('#remove-image').addEventListener('click', clearImage);
 ask.addEventListener('click', async () => {
   if (!preparedInput || !hasImage || !consent.checked || busy) { feedback.textContent = 'Capture a screen, prepare a question, and confirm your review first.'; return; }
   const key = document.querySelector('#api-key').value;
   if (!key) { feedback.textContent = 'Enter your OpenAI API key.'; return; }
   busy = true;
+  answer.textContent = '';
+  answerSection.hidden = true;
+  source.disabled = true;
   const current = revision;
   form.querySelectorAll('input,textarea,button').forEach(element => { element.disabled = true; });
   document.querySelector('#sources').disabled = true;
@@ -107,6 +115,7 @@ ask.addEventListener('click', async () => {
   } catch (error) { if (current === revision) feedback.textContent = error.message; }
   finally {
     busy = false;
+    source.disabled = false;
     consent.checked = false;
     form.querySelectorAll('input,textarea,button').forEach(element => { element.disabled = false; });
     document.querySelector('#sources').disabled = false;
@@ -127,7 +136,7 @@ copy.addEventListener('click', async () => {
   copy.disabled = true;
   try {
     await window.study.copy(preparedInput);
-    if (current === revision) feedback.textContent = 'Copied to your clipboard. No provider was contacted.';
+    if (current === revision) feedback.textContent = 'Request copied. Copying does not send it to a provider.';
   } catch (error) {
     if (current === revision) feedback.textContent = error.message;
   } finally {

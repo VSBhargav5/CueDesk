@@ -50,7 +50,7 @@ app.once('browser-window-created', (_event, window) => {
         const prompt = document.querySelector('#prompt').textContent;
         const copied = new Promise((resolve, reject) => {
           const observer = new MutationObserver(() => {
-            if (document.querySelector('#feedback').textContent.startsWith('Copied')) {
+            if (document.querySelector('#feedback').textContent.startsWith('Request copied.')) {
               observer.disconnect(); clearTimeout(timer); resolve();
             }
           });
@@ -70,6 +70,16 @@ app.once('browser-window-created', (_event, window) => {
         await waitFor(() => !document.querySelector('#image').hidden);
         await waitFor(() => document.querySelector('#image').naturalWidth > 0);
         const capture = document.querySelector('#image').src;
+        const source = document.querySelector('#source');
+        source.value = '';
+        source.dispatchEvent(new Event('change', { bubbles: true }));
+        await waitFor(() => document.querySelector('#image').hidden);
+        if (!preview.hidden || document.querySelector('#consent').checked) throw new Error('Source change kept stale request');
+        source.value = 'window:10:0';
+        source.dispatchEvent(new Event('change', { bubbles: true }));
+        document.querySelector('#capture').click();
+        await waitFor(() => !document.querySelector('#image').hidden);
+
         form.requestSubmit();
         await waitFor(() => !preview.hidden);
         document.querySelector('#api-key').value = 'synthetic-key';
@@ -81,6 +91,8 @@ app.once('browser-window-created', (_event, window) => {
         document.querySelector('#consent').checked = true;
         document.querySelector('#ask').click();
         await waitFor(() => !document.querySelector('#cancel').disabled);
+        if (!document.querySelector('#answer-section').hidden || document.querySelector('#answer').textContent) throw new Error('Previous answer remained visible');
+        if (!document.querySelector('#source').disabled) throw new Error('Source editable during request');
         document.querySelector('#cancel').click();
         await waitFor(() => document.querySelector('#cancel').disabled);
         const imageKeptAfterCancel = !document.querySelector('#image').hidden;
