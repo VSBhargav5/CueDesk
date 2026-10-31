@@ -16,7 +16,7 @@ function textField(value, name, limit, required) {
   if (value.length > limit) throw new RangeError(`${name} exceeds ${limit} UTF-16 code units`);
   const normalized = value.trim();
   if (required && !normalized) throw new TypeError(`${name} must be nonblank`);
-  return normalized;
+  return required ? normalized : (normalized ? value : '');
 }
 
 function prepareStudyRequest(input) {

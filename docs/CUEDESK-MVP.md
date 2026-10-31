@@ -12,7 +12,17 @@ Start with an inspectable question and screenshot, then an explicit request to
 the chosen model. The user can be the first real operator, but usefulness,
 time savings, model quality, and monetization are not yet measured.
 
-## Today's foundation
+## Current screen-study implementation
+
+The launcher now lists screens/windows on request, captures a selected still,
+shows the actual image, prepares a study request, and sends the reviewed image
+and text to OpenAI only after the user supplies a session key and confirms.
+It displays the answer, supports cancellation and can stay above other windows.
+The connected workflow has a synthetic Electron smoke test with a fake capture
+and provider. Real capture permissions, real provider behavior, model usefulness,
+the inherited Cue overlay and meeting audio are not yet verified in this launcher.
+
+## Earlier foundation
 
 The new launcher provides a visible local study panel and deterministic request
 preparation from typed question/context. The user selects hint, explanation,
@@ -41,19 +51,14 @@ Provider quality needs examples the user can independently check.
 
 ## Sequence after setup
 
-1. Inspect Cue's screen-capture code and add user-selected screenshot preview
-   without automatically sending it.
-2. Review one provider adapter, configure it deliberately, and connect an explicit
-   send/cancel path. Use offline fixtures for automated tests; live paid calls
-   need separate authorization.
-3. Exercise a study example and a debugging example on the user's Windows machine.
+1. Exercise a study example and a debugging example on the user's Windows machine.
    Record observed problems before deciding whether packaging is the next need.
-4. After the screen-first MVP, review a separate opt-in audio/transcription slice.
+2. After the screen-first MVP, review a separate opt-in audio/transcription slice.
    Meeting notes require their own capture, retention, and data-flow decisions.
 
 Avoid adding a hosted service, subscriptions, agent loops, broad integrations,
-or a new abstraction merely to fill the roadmap. Do not claim a model-assisted
-workflow until a real configured model path is implemented and verified.
+or a new abstraction merely to fill the roadmap. The model path is implemented;
+mock tests do not prove a real provider response or answer quality.
 
 ## Learning session: preparation is not inference (60–90 minutes)
 

@@ -3,15 +3,13 @@
 A personal Windows study and coding workspace, adapted from
 [Blueturboguy07/cue](https://github.com/Blueturboguy07/cue).
 
-**Current stage: a small offline foundation, not the AI MVP.** The new study
-launcher accepts a typed question and context, prepares a tutoring request in
-hint, explanation, or debugging mode, and lets you preview or copy it. The
-prepared text is a request you can inspect; it is not an AI-generated answer.
-
-Screenshots, provider calls, microphone input, system audio, and meeting notes
-are not connected to this study launcher yet. Cue's existing implementation is
-retained for reviewed reuse; those inherited capabilities are not claimed as
-new CueDesk work or as verified behavior in this launcher.
+The screen-study launcher lists screens and windows when requested, captures the
+selected source as a still image, shows its preview, and sends that image and a
+reviewed study question to OpenAI only after explicit confirmation. It displays
+the answer and supports cancellation and an optional always-on-top window.
+The initial connected workflow has been tested using synthetic captures and a
+mock provider. Live capture/provider behavior and model quality remain unverified.
+The inherited Cue meeting assistant remains separate in `main.js`.
 
 ## Run from source
 
@@ -33,18 +31,30 @@ ordinary process identity, and the app identifies itself as CueDesk.
 It does not launch the inherited `main.js` meeting assistant. This is a source
 run; no signed Windows installer is claimed.
 
+Once dependencies and Electron are installed, double-click `Launch-CueDesk.cmd`
+in this folder to open the same study workspace without typing a command.
+
 ## What to try
 
-1. Enter a study question and paste a small, non-sensitive code or text example.
-2. Choose hints, a first-principles explanation, or debugging help.
-3. Preview the prepared request and inspect exactly what it contains.
-4. Copy it only when you want it placed on the Windows clipboard.
-5. Close the ordinary app window when finished.
+1. Click **List screens and windows**, choose the material you want to study,
+   then click **Capture preview**. Confirm the image is the one you intend.
+2. Enter a question and optional code, choose hint/explain/debug, then preview it.
+3. Enter your own OpenAI API key into the masked session field, review the text
+   and screenshot, check the review box and click **Ask about this screen**.
+4. Read and check the answer. Use **Cancel request** to stop waiting or
+   **Remove image** / **Clear session** to discard the capture.
+5. Optionally check **Keep CueDesk above other windows** while studying.
 
-The study flow has no configured model provider and does not send the prepared
-request to one. Typed content is not deliberately saved as conversation history.
-Copying writes the prepared text to the system clipboard, which is outside the
-app's in-memory session. It is not a secure storage mechanism.
+OpenAI's Responses API receives the exact preview image and prepared text with
+`store=false` when you choose Ask. Calls may incur charges; `store=false` does
+not guarantee zero retention. Cancel aborts the local request and cannot guarantee
+the provider stopped processing or billing it. The key and capture remain in
+memory for the session; Clear removes them from the interface, not securely erased.
+The image is a compressed JPEG and can lose small details. Listing sources asks
+Electron for names; obtaining a selected source may create temporary thumbnails
+of other screens/windows of the same type inside the process. Only the selected
+preview is retained and sent. No microphone/audio capture in the study launcher.
+Clipboard history and any provider data retention are outside CueDesk's control.
 
 ## Project map
 
@@ -69,7 +79,8 @@ Run the complete repository suite with `npm test`. With Electron prepared,
 `npm run test:desktop` exercises the real study renderer/preload/IPC with synthetic
 text, stubs the clipboard, and writes `out/study-desktop.png`. This does not
 verify physical clipboard integration or an interactive foreground-window launch.
-Local verification: all 301 Node tests passed, and this Electron smoke passed.
+The Electron smoke uses a synthetic image, fake provider and stub clipboard;
+it exercises capture preview, exact image payload, answer and cancellation.
 
 Read-only CI is configured
 for Windows and Linux on Node 22 and 24; consult the actual workflow result for
@@ -79,10 +90,10 @@ and a unit test does not establish real provider quality or Windows packaging.
 
 ## Next session
 
-Add an explicit screenshot selection and preview flow, then a user-selected
-provider with a clear send action, cancellation, errors, and context clearing.
-The first MVP is screen-based study/coding help. Meeting transcription and notes
-follow separately, with explicit capture controls.
+Run a user-authorized synthetic live-provider trial and manually verify screen
+selection, pinning and cancellation on Windows. Then improve the workflow based
+on observed use. Meeting transcription and notes follow separately, with explicit
+capture controls. The inherited Cue overlay is not yet integrated or verified.
 
 SettleTrace is paused while this MVP is the active implementation sprint.
 After the MVP is usable, review which project should lead the next sprint.
