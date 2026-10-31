@@ -35,6 +35,13 @@ app.once('browser-window-created', (_event, window) => {
         const question = document.querySelector('#question');
         const context = document.querySelector('#context');
         const preview = document.querySelector('#preview');
+        document.querySelector('#capture').click();
+        if (!document.querySelector('#feedback').textContent.includes('Choose a screen')) throw new Error('Missing source gave no guidance');
+        for (const mode of ['explain', 'hint', 'debug']) {
+          document.querySelector('[data-starter="' + mode + '"]').click();
+          if (form.mode.value !== mode || !question.value || !preview.hidden) throw new Error('Question starter did not reset review');
+        }
+        form.mode.value = 'hint';
         question.value = 'Why does this loop skip the last item?';
         context.value = 'for (let i = 0; i < items.length - 1; i++) visit(items[i]);';
         question.dispatchEvent(new Event('input', { bubbles: true }));
@@ -45,7 +52,7 @@ app.once('browser-window-created', (_event, window) => {
           const timer = setTimeout(() => { observer.disconnect(); reject(new Error('Preview did not appear')); }, 3000);
           observer.observe(preview, { attributes: true, attributeFilter: ['hidden'] });
         });
-        form.requestSubmit();
+        question.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }));
         await shown;
         const prompt = document.querySelector('#prompt').textContent;
         const copied = new Promise((resolve, reject) => {
@@ -115,6 +122,7 @@ app.once('browser-window-created', (_event, window) => {
       assert.equal(result.cleared, true);
       assert.deepEqual(result.bridge, ['ask', 'cancel', 'capture', 'clearImage', 'copy', 'pin', 'prepare', 'sources']);
       assert.equal(result.nodeExposed, false);
+      assert.equal(requests, 2, "Starters and preview shortcut must not call the provider");
       // Render a deterministic example again for a screenshot of this app only.
       await window.webContents.executeJavaScript(`(async () => {
         const sample = await window.study.capture('window:10:0');
@@ -125,6 +133,8 @@ app.once('browser-window-created', (_event, window) => {
         document.querySelector('#context').value = 'for (let i = 0; i < items.length - 1; i++) visit(items[i]);';
         document.querySelector('#question').dispatchEvent(new Event('input', { bubbles: true }));
       })()`);
+      await window.webContents.executeJavaScript('window.scrollTo(0, 0)');
+      await new Promise(resolve => setTimeout(resolve, 200));
       const screenshot = await window.webContents.capturePage();
       fs.writeFileSync(path.join(output, 'study-desktop.png'), screenshot.toPNG());
       clearTimeout(timeout);

@@ -26,7 +26,7 @@ app.whenReady().then(() => {
   });
 
   window = new BrowserWindow({
-    width: 880, height: 760, minWidth: 660, minHeight: 600,
+    width: 1100, height: 820, minWidth: 660, minHeight: 600,
     title: 'CueDesk — Study workspace', backgroundColor: '#111820',
     autoHideMenuBar: true, show: false,
     webPreferences: {

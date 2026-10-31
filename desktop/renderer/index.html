@@ -14,11 +14,15 @@
     <p class="intro">Bring a question, add the context, and choose how you want to learn.</p>
     <div class="status"><span class="dot"></span>Capture only when you choose · No microphone · Send only after review</div>
     <label class="consent"><input type="checkbox" id="pin"> Keep CueDesk above other windows</label>
+    <div class="workspace">
     <section class="capture"><h2>1. Choose what to study</h2><p class="note">List available screens and windows, select one, then capture a still preview. The capture stays local until you send it.</p>
       <div class="actions"><button type="button" id="sources">List screens and windows</button><select id="source" aria-label="Screen or window"><option value="">Choose a source</option></select><button type="button" id="capture" class="secondary">Capture preview</button><button type="button" id="remove-image" class="secondary">Remove image</button></div>
-      <p id="image-info" class="note">No capture selected.</p><img id="image" alt="Selected screen or window preview" hidden>
+      <div class="image-frame"><p id="image-info" class="note">Your capture will appear here. Select a window, then capture a preview.</p><img id="image" alt="Selected screen or window preview" hidden></div>
     </section>
     <form id="study-form">
+      <h2>2. Ask a focused question</h2>
+      <p class="note">Start with a suggestion or write your own. Review before sending.</p>
+      <div class="starters" aria-label="Question starters"><button type="button" class="secondary" data-starter="explain">Explain this</button><button type="button" class="secondary" data-starter="hint">Give me a hint</button><button type="button" class="secondary" data-starter="debug">Find the bug</button></div>
       <fieldset><legend>How should we approach it?</legend>
         <label class="mode"><input type="radio" name="mode" value="hint" checked><span><strong>Give me a hint</strong><small>One step, then let me try.</small></span></label>
         <label class="mode"><input type="radio" name="mode" value="explain"><span><strong>Explain the idea</strong><small>Build from first principles.</small></span></label>
@@ -26,16 +30,17 @@
       </fieldset>
       <label for="question">Your question <span>Required</span></label>
       <textarea id="question" rows="3" maxlength="4000" required placeholder="Why does this function return the same value twice?"></textarea>
-      <label for="context">Context <span>Optional · stays in this session</span></label>
+      <label for="context">Code or extra context <span>Optional · included when you send</span></label>
       <textarea id="context" rows="5" maxlength="20000" placeholder="Paste a small code sample, an error, or what you have already tried."></textarea>
-      <div class="actions"><button type="submit">Preview study request</button><button type="button" id="clear" class="secondary">Clear session</button></div>
+      <div class="actions"><button type="submit">Review request <kbd>Ctrl + Enter</kbd></button><button type="button" id="clear" class="secondary">Clear session</button></div>
     </form>
-    <section id="preview" hidden><div class="preview-heading"><h2>2. Review and ask</h2><button type="button" id="copy" class="secondary">Copy request</button></div><p class="note">The prompt and captured image above are sent to OpenAI (gpt-4.1-mini) only when you press Ask. API charges apply. Your key is kept only in this session.</p><pre id="prompt"></pre>
+    </div>
+    <section id="preview" hidden><div class="preview-heading"><h2>3. Review and send</h2><button type="button" id="copy" class="secondary">Copy request</button></div><p class="note">The prompt and captured image above are sent to OpenAI (gpt-4.1-mini) only when you press Ask. API charges apply. Your key is kept only in this session.</p><pre id="prompt"></pre>
       <label for="api-key">OpenAI API key <span>Session only</span></label><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your own API key">
       <label class="consent"><input type="checkbox" id="consent"> I reviewed the screen preview and request for sending.</label>
       <div class="actions"><button type="button" id="ask">Ask about this screen</button><button type="button" id="cancel" class="secondary" disabled>Cancel request</button></div>
     </section>
-    <section id="answer-section" hidden><h2>3. AI answer</h2><p class="note">Check the answer: AI can make mistakes.</p><pre id="answer"></pre></section>
+    <section id="answer-section" hidden><h2>4. Work through the answer</h2><p class="note">Check the answer: AI can make mistakes.</p><pre id="answer"></pre></section>
     <p id="feedback" role="status" aria-live="polite">Choose a screen or window to start.</p>
     <footer>Adapted from Cue · Personal study and coding · In-memory session, no saved history</footer>
   </main>

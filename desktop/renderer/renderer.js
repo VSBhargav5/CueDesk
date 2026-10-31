@@ -33,6 +33,27 @@ function invalidate() {
   feedback.textContent = 'Inputs changed. Preview and review the current request.';
 }
 form.addEventListener('input', invalidate);
+const starters = {
+  explain: 'Explain what is shown in this capture, from first principles. Use a small example I can check.',
+  hint: 'Give me one hint to make progress on what is shown. Let me try before revealing the full solution.',
+  debug: 'Help me debug what is shown. Separate observations from hypotheses and suggest the smallest check.'
+};
+form.querySelectorAll('[data-starter]').forEach(button => {
+  button.addEventListener('click', () => {
+    if (busy) return;
+    form.mode.value = button.dataset.starter;
+    form.question.value = starters[button.dataset.starter];
+    invalidate();
+    form.question.focus();
+  });
+});
+form.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey) && !event.repeat) {
+    event.preventDefault();
+    if (!busy) form.requestSubmit();
+  }
+});
+
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const current = ++revision;
@@ -43,6 +64,7 @@ form.addEventListener('submit', async event => {
     preparedInput = payload;
     prompt.textContent = result.prompt;
     preview.hidden = false;
+    preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
     feedback.textContent = 'Request prepared locally. Review the text and screenshot before asking.';
   } catch (error) {
     if (current === revision) feedback.textContent = error.message;
@@ -59,7 +81,8 @@ document.querySelector('#sources').addEventListener('click', async () => {
   } catch { feedback.textContent = 'Could not list screens and windows.'; }
 });
 document.querySelector('#capture').addEventListener('click', async () => {
-  if (!source.value || busy) return;
+  if (busy) return;
+  if (!source.value) { feedback.textContent = 'Choose a screen or window from the list before capturing.'; source.focus(); return; }
   invalidate();
   hasImage = false;
   image.hidden = true;
@@ -72,6 +95,7 @@ document.querySelector('#capture').addEventListener('click', async () => {
     image.src = captured.image;
     image.hidden = false;
     hasImage = true;
+    form.question.focus();
     document.querySelector('#image-info').textContent = `Captured: ${captured.name}. Review the image before sending.`;
     feedback.textContent = 'Screen captured locally. Prepare your question and review before sending.';
   } catch (error) {
